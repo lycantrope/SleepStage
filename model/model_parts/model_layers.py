@@ -14,7 +14,7 @@ class Conv1DLayer(nn.Module):
                 padding=int(kernel_size - 1) // 2,
                 bias=False,
             ),
-            nn.ReLU(inplace=True),
+            nn.ReLU(),
             nn.Dropout(dropout),
         )
 
@@ -35,7 +35,7 @@ class STFTConvLayer(nn.Module):
                 padding=int(kernel_size - 1) // 2,
                 bias=False,
             ),
-            nn.ReLU(inplace=True),
+            nn.ReLU(),
             nn.Dropout(dropout),
         )
 

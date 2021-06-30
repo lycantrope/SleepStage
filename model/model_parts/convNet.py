@@ -1,11 +1,11 @@
 import torch.nn as nn
 
-from model.model_parts import Conv1DLayer
+from .model_layers import Conv1DLayer
 
 
 class ConvNet(nn.Module):
     def __init__(
-        self, input_dims, in_channel, filters, kernels, strides, skip_step, dropout
+        self, input_dims, in_channel, filters, kernels, strides, skip_by, dropout
     ):
         super().__init__()
         err = "input length is not equal ({0}, {1})"
@@ -28,13 +28,11 @@ class ConvNet(nn.Module):
             # count dimensions
             dims_counts = (dims_counts - 1) // stride + 1
 
-            if id % skip_step:
+            if id % skip_by:
                 skip_kernel_size = kernel
 
-            if id % skip_step == (-1) % skip_step:
-                # print('# blockID =', blockID)
-                # print('# skip_inputDim =', skip_inputDim, ', skip_kernel_size =', skip_kernel_size)
-                # print('# skip_outputDim =', skip_outputDim, ', skip_stride =', skip_stride)
+            if id % skip_by == (-1) % skip_by:
+
                 skips[f"skip_conv{id}"] = nn.Conv1d(
                     skip_in_ch,
                     out_ch,
@@ -48,9 +46,10 @@ class ConvNet(nn.Module):
                 acc_stride = 1
                 skip_in_ch = out_ch
 
-            # count the raw outpur dimension
-        self.skip_step = skip_step
-        self.outputDims = dims_counts
+        self.skip_by = skip_by
+        self.outputChannels = out_ch  # output channels
+        self.outputDims = dims_counts  # output dimensions
+        self.outputSize = out_ch * dims_counts  # channels * dimensions
         self.skip_outputDims = skip_outputDims
 
         self.convs = nn.ModuleDict(convs)
